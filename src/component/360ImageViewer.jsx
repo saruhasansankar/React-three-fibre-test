@@ -20,6 +20,8 @@ const Hotspot = ({ position, info }) => {
 
   return (
     <mesh position={position} ref={hotspotRef}>
+      <sphereGeometry args={[5, 32, 32]} />
+      <meshBasicMaterial color="purple" />
       <Html position={[0, 1, 0]} className="hotspot">
         <div
           className="hotspot-icon"

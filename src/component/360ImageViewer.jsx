@@ -1,26 +1,37 @@
 import React, { useState } from "react";
 import { Canvas } from "@react-three/fiber";
 import { OrbitControls, Html } from "@react-three/drei";
-import { VRButton, XR, Controllers, Hands } from "@react-three/xr";
+import { VRButton, XR, Controllers, Hands, useXREvent } from "@react-three/xr";
 import * as THREE from "three";
+import "./styles.css"; // Make sure you have appropriate styles defined
+
 const Hotspot = ({ position, info }) => {
   const [showInfo, setShowInfo] = useState(false);
 
+  useXREvent("selectstart", () => setShowInfo(!showInfo), {
+    handedness: "left",
+  });
+  useXREvent("selectstart", () => setShowInfo(!showInfo), {
+    handedness: "right",
+  });
+
   return (
-    <mesh position={position} onClick={() => setShowInfo(!showInfo)}>
-      <sphereGeometry args={[5, 32, 32]} />
-      <meshBasicMaterial color="purple" />
-      <Html position={[0, 1, 0]} className="hotspot">
-        <div
-          className="hotspot-icon"
-          style={{
-            background: "purple",
-            borderRadius: "50%",
-            width: "30px",
-            height: "30px",
-          }}
-        ></div>
-      </Html>
+    <group position={position}>
+      <mesh>
+        <sphereGeometry args={[5, 32, 32]} />
+        <meshBasicMaterial color="purple" />
+        <Html position={[0, 1, 0]} className="hotspot">
+          <div
+            className="hotspot-icon"
+            style={{
+              background: "purple",
+              borderRadius: "50%",
+              width: "30px",
+              height: "30px",
+            }}
+          ></div>
+        </Html>
+      </mesh>
       {showInfo && (
         <Html position={[0, 2, 0]} className="hotspot-content">
           <div className="hotspot-popup">
@@ -35,7 +46,7 @@ const Hotspot = ({ position, info }) => {
           </div>
         </Html>
       )}
-    </mesh>
+    </group>
   );
 };
 

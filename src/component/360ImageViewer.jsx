@@ -1,22 +1,28 @@
-import React, { useState } from "react";
-import { Canvas } from "@react-three/fiber";
+import React, { useRef, useState } from "react";
+import { Canvas, useFrame } from "@react-three/fiber";
 import { OrbitControls, Html } from "@react-three/drei";
-import { VRButton, XR, Controllers, Hands, useXREvent } from "@react-three/xr";
+import { VRButton, XR, Controllers, Hands, RayGrab } from "@react-three/xr";
 import * as THREE from "three";
-// Make sure you have appropriate styles defined
 
 const Hotspot = ({ position, info }) => {
   const [showInfo, setShowInfo] = useState(false);
+  const hotspotRef = useRef();
 
-  useXREvent("selectstart", () => setShowInfo(!showInfo), {
-    handedness: "left",
-  });
-  useXREvent("selectstart", () => setShowInfo(!showInfo), {
-    handedness: "right",
+  useFrame(({ gl }) => {
+    if (hotspotRef.current) {
+      const intersects = gl.xr
+        .getController(0)
+        .intersection(hotspotRef.current);
+      if (intersects && intersects.length > 0) {
+        if (intersects[0].object === hotspotRef.current) {
+          setShowInfo(true);
+        }
+      }
+    }
   });
 
   return (
-    <group position={position}>
+    <group position={position} ref={hotspotRef}>
       <mesh>
         <sphereGeometry args={[5, 32, 32]} />
         <meshBasicMaterial color="purple" />

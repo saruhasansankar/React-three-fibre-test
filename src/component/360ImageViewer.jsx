@@ -3,7 +3,7 @@ import { Canvas } from "@react-three/fiber";
 import { OrbitControls, Html } from "@react-three/drei";
 import { VRButton, XR, Controllers, Hands, useXREvent } from "@react-three/xr";
 import * as THREE from "three";
-import "./styles.css"; // Make sure you have appropriate styles defined
+// Make sure you have appropriate styles defined
 
 const Hotspot = ({ position, info }) => {
   const [showInfo, setShowInfo] = useState(false);

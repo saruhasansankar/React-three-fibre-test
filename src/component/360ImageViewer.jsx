@@ -1,43 +1,38 @@
-import React, { useRef, useState } from "react";
-import { Canvas, useFrame } from "@react-three/fiber";
+import React, { useRef, useState, useEffect } from "react";
+import { Canvas, useThree, extend } from "@react-three/fiber";
 import { OrbitControls, Html } from "@react-three/drei";
-import { VRButton, XR, Controllers, Hands, RayGrab } from "@react-three/xr";
+import { VRButton, XR, Controllers, Hands, useXREvent } from "@react-three/xr";
 import * as THREE from "three";
+
+// Extend useXREvent for custom interaction handling
+extend({ VRButton, XR, Controllers, Hands, useXREvent });
 
 const Hotspot = ({ position, info }) => {
   const [showInfo, setShowInfo] = useState(false);
   const hotspotRef = useRef();
 
-  useFrame(({ gl }) => {
-    if (hotspotRef.current) {
-      const intersects = gl.xr
-        .getController(0)
-        .intersection(hotspotRef.current);
-      if (intersects && intersects.length > 0) {
-        if (intersects[0].object === hotspotRef.current) {
-          setShowInfo(true);
-        }
-      }
-    }
-  });
+  const handleSelect = () => {
+    setShowInfo(!showInfo);
+  };
+
+  useXREvent("selectstart", handleSelect, { handedness: "left" });
+  useXREvent("selectstart", handleSelect, { handedness: "right" });
 
   return (
-    <group position={position} ref={hotspotRef}>
-      <mesh>
-        <sphereGeometry args={[5, 32, 32]} />
-        <meshBasicMaterial color="purple" />
-        <Html position={[0, 1, 0]} className="hotspot">
-          <div
-            className="hotspot-icon"
-            style={{
-              background: "purple",
-              borderRadius: "50%",
-              width: "30px",
-              height: "30px",
-            }}
-          ></div>
-        </Html>
-      </mesh>
+    <mesh position={position} ref={hotspotRef}>
+      <sphereGeometry args={[5, 32, 32]} />
+      <meshBasicMaterial color="purple" />
+      <Html position={[0, 1, 0]} className="hotspot">
+        <div
+          className="hotspot-icon"
+          style={{
+            background: "purple",
+            borderRadius: "50%",
+            width: "30px",
+            height: "30px",
+          }}
+        ></div>
+      </Html>
       {showInfo && (
         <Html position={[0, 2, 0]} className="hotspot-content">
           <div className="hotspot-popup">
@@ -52,7 +47,7 @@ const Hotspot = ({ position, info }) => {
           </div>
         </Html>
       )}
-    </group>
+    </mesh>
   );
 };
 
